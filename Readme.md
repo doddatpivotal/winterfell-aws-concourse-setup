@@ -13,8 +13,8 @@ The process should take about 30 minutes.
 
 ## Pave IaaS
 
-1. Terraform
-2. update with output variables
+1. Terraform apply: change directory or terraforming-concourse and then `terraform apply`
+2. Update with output variables
     - bosh_ip
         - update vars/bosh-director-params.yml
     - concourse_ip
@@ -138,3 +138,9 @@ You can visit concourse at http://ci.aws.winterfell.live and use the following t
 ```
 fly --target lab login --concourse-url http://ci.aws.winterfell.live
 ```
+
+## Possible Next Steps
+
+1. Add generation of key pair within concourse scripts
+2. Add setup scripts
+3. Add tear down scripts
