@@ -1,0 +1,74 @@
+azs:
+- name: z1
+  cloud_properties:
+    availability_zone: us-east-2a
+
+vm_types:
+- name: default
+  cloud_properties:
+    instance_type: t3.small # 2 cpu, 2 ram
+    ephemeral_disk: {size: 4096, type: gp2}
+- name: concourse-web
+  cloud_properties:
+    instance_type: t2.large # 2 cpu, 8 ram
+    ephemeral_disk: {size: 50000, type: gp2}
+    security_groups: ["concourse-web", "bosh"] 
+- name: concourse-db
+  cloud_properties:
+    instance_type: c5.xlarge # 4 cpu, 8 ram
+    ephemeral_disk: {size: 10000, type: gp2}
+- name: concourse-workers
+  cloud_properties:
+    instance_type: t2.large # 4 cpu, 8 ram
+    ephemeral_disk: {size: 300000, type: gp2}
+
+disk_types:
+- name: default
+  disk_size: 3000
+  cloud_properties: {type: gp2}
+- name: provisioner
+  disk_size: 10000
+  cloud_properties: {type: gp2}
+- name: concourse-db
+  disk_size: 200000
+  cloud_properties: {type: gp2}
+
+networks:
+- name: concourse-private
+  type: manual
+  subnets:
+  - az: z1
+    cloud_properties:
+      subnet: subnet-02467c09e5f851f16
+    dns: [8.8.8.8]
+    gateway: 10.0.1.1
+    range: 10.0.1.0/24
+    reserved:
+    - 10.0.1.2 - 10.0.1.180
+    - 10.0.1.190 - 10.0.1.255
+    static:
+    - 10.0.1.181 # concourse web
+    - 10.0.1.182 # concourse db
+- name: concourse
+  type: manual
+  subnets:
+  - az: z1
+    cloud_properties:
+      subnet: subnet-078966c14c277b506
+    dns: [8.8.8.8]
+    gateway: 10.0.0.1
+    range: 10.0.0.0/24
+    reserved:
+    - 10.0.0.2 - 10.0.0.180
+    - 10.0.0.190 - 10.0.0.255
+    static:
+    - 10.0.0.181 # concourse web
+    - 10.0.0.182 # concourse db
+- name: vip
+  type: vip
+compilation:
+  workers: 5
+  reuse_compilation_vms: true
+  az: z1
+  vm_type: default
+  network: concourse
