@@ -7,13 +7,17 @@ The process should take about 30 minutes.
 
 ## Setup
 
+Get the supported credhub version from [Concourse for PCF docs](https://docs.pivotal.io/p-concourse/4-x/index.html#compatibility)
+
+>NOTE: Update the tag version in ./scripts/clone-source-git-repos.sh
+
 ```bash
 ./scripts/clone-source-git-repos.sh
 ```
 
 ## Pave IaaS
 
-1. Terraform apply: change directory or terraforming-concourse and then `terraform apply`
+1. Terraform apply: change directory to terraforming-concourse and then `terraform apply`
 2. Update with output variables
     - bosh_ip
         - update vars/bosh-director-params.yml
@@ -22,9 +26,9 @@ The process should take about 30 minutes.
         - update godady dns for ci.aws.winterfell.live
     - public_subnet_id
         - update vars/bosh-director-params.yml
-        - update bosh/cloud.yml
+        - update bosh/cloud.yml (concourse network)
     - private_subnet_id
-        - update vars/bosh-director-params.yml
+        <!-- - update vars/bosh-director-params.yml I don't think this is necessary -->
         - update bosh/cloud.yml
 
 ## Bosh Director Installation
@@ -36,6 +40,8 @@ First you need to setup a dedicated BOSH director for Concourse.  The following 
 You will need to update the variables passed in below with the ones provided by your environment
 
 ```bash
+export ACCESS_KEY_ID=<get from ../credentails.csv>
+export SECRET_ACCESS_KEY=<get from ../credentails.csv>
 ./scripts/create-bosh.sh $ACCESS_KEY_ID $SECRET_ACCESS_KEY
 ```
 
@@ -56,7 +62,7 @@ Now you are ready for the concourse installation.
 1. Use Pivnet to retrieve stemcells and then upload into bosh
 
 Log into Pivnet
-Download 97 stemcell **may have to update release version and identifier**
+Download stemcell **may have to update release version and identifier**
 >See [Concourse Compatibility](https://docs.pivotal.io/p-concourse/index.html#compatibility) for supported stemcells
 
 Your token may be found at ~/.pivnetrc
@@ -67,12 +73,14 @@ Get the supported XENIAL_VERSION from [Concourse for PCF docs](https://docs.pivo
 ./scripts/retrieve-and-upload-stemcell.sh $PIVNET_API_TOKEN $XENIAL_VERSION $XENIAL_SLUG
 ```
 
->Example `./scripts/retrieve-and-upload-stemcell.sh $PIVNET_API_TOKEN 97.41 276952`
+>Example `./scripts/retrieve-and-upload-stemcell.sh $PIVNET_API_TOKEN 250.29 352497`
 
 1. Deploy Concourse
 
 Get the supported credhub version from [Concourse for PCF docs](https://docs.pivotal.io/p-concourse/4-x/index.html#compatibility)
-Go to bosh.io to get the sha1 for the version
+
+>NOTE: Update the tag version in ./scripts/clone-source-git-repos.sh
+
 Check that you have the right versions of concourse, postgres, uaa, and garden_runc while you are at it
 
 Update the variables with specifics from your environment
@@ -93,12 +101,10 @@ For a uaa/credhub solution...
 ```bash
 bosh int generated/bosh/creds.yml --path /jumpbox_ssh/private_key > generated/bosh/jumpbox.key
 chmod 600  generated/bosh/jumpbox.key
-bosh alias-env bosh-concourse-aws -e 3.17.124.101 --ca-cert <(bosh int generated/bosh/creds.yml --path /director_ssl/ca)
+bosh alias-env bosh-concourse-aws -e $BOSH_IP --ca-cert <(bosh int generated/bosh/creds.yml --path /director_ssl/ca)
 bosh -e bosh-concourse-aws vms
-bosh -e bosh-concourse-aws -d concourse ssh $VM  --gw-host=3.17.124.101 --gw-user jumpbox --gw-private-key generated/bosh/jumpbox.key
+bosh -e bosh-concourse-aws -d concourse ssh $VM_FROM_PREVIOUS_COMMAND  --gw-host=$BOSH_IP --gw-user jumpbox --gw-private-key generated/bosh/jumpbox.key
 ```
-
->SPECIAL NOTE!!!! Create an Elastic IP and associated it to the web instance.  Update your ci.aws.winterfell.live to the elastic IP.  Create a security group allowing traffic from anyware to port 443, 8443 (uaa), and 8844 (credhub) and associate the security group to the web instance.
 
 1. Create concourse user
 
@@ -131,16 +137,9 @@ fly -t aws trigger-job -j hello-credhub/hello-credhub -w
 
 ```
 
-1. Access concourse
-
-**you will need to be on vpn**
-You can visit concourse at http://ci.aws.winterfell.live and use the following to setup local fly target
-```
-fly --target lab login --concourse-url http://ci.aws.winterfell.live
-```
-
 ## Possible Next Steps
 
-1. Add generation of key pair within concourse scripts
-2. Add setup scripts
-3. Add tear down scripts
+1. Update concourse files to only make custom replacements from the core options
+2. Add generation of key pair within concourse scripts
+3. Add setup scripts
+4. Add tear down scripts

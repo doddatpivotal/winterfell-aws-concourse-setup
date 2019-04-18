@@ -3,6 +3,8 @@ generated/
 # Local .terraform directories
 **/.terraform/*
 
+local-cache/
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

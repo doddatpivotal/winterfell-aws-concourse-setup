@@ -6,8 +6,8 @@ azs:
 vm_types:
 - name: default
   cloud_properties:
-    instance_type: t3.small # 2 cpu, 2 ram
-    ephemeral_disk: {size: 4096, type: gp2}
+    instance_type: m4.large
+    ephemeral_disk: {size: 25_000, type: gp2}
 - name: concourse-web
   cloud_properties:
     instance_type: t2.large # 2 cpu, 8 ram
@@ -39,7 +39,7 @@ networks:
   subnets:
   - az: z1
     cloud_properties:
-      subnet: subnet-02467c09e5f851f16
+      subnet: subnet-02068621a286a347a
     dns: [8.8.8.8]
     gateway: 10.0.1.1
     range: 10.0.1.0/24
@@ -54,7 +54,7 @@ networks:
   subnets:
   - az: z1
     cloud_properties:
-      subnet: subnet-078966c14c277b506
+      subnet: subnet-00b728385872bd873
     dns: [8.8.8.8]
     gateway: 10.0.0.1
     range: 10.0.0.0/24

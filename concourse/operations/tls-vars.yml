@@ -16,3 +16,4 @@
       ca: atc_ca
       alternative_names: [((external_host))]
       common_name: ((external_host))
+      organization: atcOrg
