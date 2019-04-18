@@ -1,6 +1,6 @@
 # Concourse Installation at AWS
 
-The following guide walks through setting up Concourse for PCF on Aws.  This is for demo and sandbox activities only and does not represent a production ready implementation. The following Pivotal documentation drove this effort: https://docs.pivotal.io/p-concourse/installing.html
+The following guide walks through setting up Concourse for PCF on AWS.  This is for demo and sandbox activities only and does not represent a production ready implementation. The following Pivotal documentation drove this effort: https://docs.pivotal.io/p-concourse/installing.html
 The process should take about 30 minutes.
 
 ![Concourse on AWS](docs/concourse-on-aws.png)
@@ -17,24 +17,23 @@ Get the supported credhub version from [Concourse for PCF docs](https://docs.piv
 
 ## Pave IaaS
 
-1. Terraform apply: 
+1. Terraform apply:
 
-```
+```bash
 ./scripts/create-iaas.sh
 ```
 
 2. Update with output variables
     - bosh_ip
-        - update vars/bosh-director-params.yml
+        - update the external_ip value within vars/bosh-director-params.yml
     - concourse_ip
-        - update vars/concourse_params.yml
+        - update the vip_ip value within vars/concourse_params.yml
         - update godady dns for ci.aws.winterfell.live
-    - public_subnet_id
-        - update vars/bosh-director-params.yml
-        - update bosh/cloud.yml (concourse network)
     - private_subnet_id
-        <!-- - update vars/bosh-director-params.yml I don't think this is necessary -->
-        - update bosh/cloud.yml
+        - update bosh/cloud.yml (concourse-private network)
+    - public_subnet_id
+        - update the subnet_id value within vars/bosh-director-params.yml
+        - update bosh/cloud.yml (concourse network)
 
 ## Bosh Director Installation
 
@@ -66,13 +65,15 @@ Now you are ready for the concourse installation.
 
 1. Use Pivnet to retrieve stemcells and then upload into bosh
 
-Log into Pivnet
-Download stemcell **may have to update release version and identifier**
 >See [Concourse Compatibility](https://docs.pivotal.io/p-concourse/index.html#compatibility) for supported stemcells
 
-Your token may be found at ~/.pivnetrc
+Log into Pivnet
 
-Get the supported XENIAL_VERSION from [Concourse for PCF docs](https://docs.pivotal.io/p-concourse/4-x/index.html#compatibility)
+Identify the stemcell version and slug
+
+Download stemcell (this is to ensure you have accepted the eula)
+
+Your token may be found at ~/.pivnetrc
 
 ```bash
 ./scripts/retrieve-and-upload-stemcell.sh $PIVNET_API_TOKEN $XENIAL_VERSION $XENIAL_SLUG
@@ -84,8 +85,6 @@ Get the supported XENIAL_VERSION from [Concourse for PCF docs](https://docs.pivo
 
 Get the supported credhub version from [Concourse for PCF docs](https://docs.pivotal.io/p-concourse/4-x/index.html#compatibility)
 
->NOTE: Update the tag version in ./scripts/clone-source-git-repos.sh
-
 Check that you have the right versions of concourse, postgres, uaa, and garden_runc while you are at it
 
 Update the variables with specifics from your environment
@@ -96,6 +95,8 @@ Helpful guides:
 - [For credhub and concourse integration](https://github.com/pivotal-cf/pcf-pipelines/blob/master/docs/credhub-integration.md)
 
 For a uaa/credhub solution...
+
+>Note: The script below largely pulls from the tagged version of concourse-bosh-deployment and then adds custom overrides from the concourse/opereations directory.  In order to test, you can use bosh interpolate based upon scripts/deploy-concourse.sh.  ie. `bosh interpolate local-cache/concourse-bosh-deployment/cluster/concourse.yml -o concourse/opereations/static-db-and-networks.yml -o ...`
 
 ```bash
 ./scripts/deploy-concourse.sh
@@ -142,15 +143,12 @@ fly -t aws trigger-job -j hello-credhub/hello-credhub -w
 
 ```
 
+>If you see "Hello World" at the end then you passed your test!
+
 ## Teardown
 
-```
+```bash
 ./scripts/delete-concourse.sh
 ./scripts/delete-bosh.sh $ACCESS_KEY_ID $SECRET_ACCESS_KEY
 ./scripts/delete-iaas.sh
 ```
-
-## Possible Next Steps
-
-1. Update concourse files to only make custom replacements from the core options
-2. Add generation of key pair within concourse scripts ?? not sure if this is still relevent

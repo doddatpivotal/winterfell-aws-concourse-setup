@@ -1,6 +1,8 @@
 # Usage: ./scripts/delete-bosh.sh [access-key-id] [secret-access-key]
 # Example: ./scripts/delete-bosh.sh $ACCESS_KEY_ID $SECRET_ACCESS_KEY
 
+source scripts/bosh-env.sh
+
 bosh delete-env ./local-cache/bosh-deployment/bosh.yml \
     --state=./generated/bosh/state.json \
     --vars-store=./generated/bosh/creds.yml \

@@ -39,31 +39,25 @@ networks:
   subnets:
   - az: z1
     cloud_properties:
-      subnet: subnet-02068621a286a347a
+      subnet: subnet-07939f4c31b747848
     dns: [8.8.8.8]
     gateway: 10.0.1.1
     range: 10.0.1.0/24
     reserved:
-    - 10.0.1.2 - 10.0.1.180
-    - 10.0.1.190 - 10.0.1.255
+    - 10.0.1.2 - 10.0.1.10
     static:
-    - 10.0.1.181 # concourse web
     - 10.0.1.182 # concourse db
 - name: concourse
   type: manual
   subnets:
   - az: z1
     cloud_properties:
-      subnet: subnet-00b728385872bd873
+      subnet: subnet-0c9c335716faf451d
     dns: [8.8.8.8]
     gateway: 10.0.0.1
     range: 10.0.0.0/24
     reserved:
-    - 10.0.0.2 - 10.0.0.180
-    - 10.0.0.190 - 10.0.0.255
-    static:
-    - 10.0.0.181 # concourse web
-    - 10.0.0.182 # concourse db
+    - 10.0.0.2 - 10.0.0.10
 - name: vip
   type: vip
 compilation:
