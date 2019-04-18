@@ -17,7 +17,12 @@ Get the supported credhub version from [Concourse for PCF docs](https://docs.piv
 
 ## Pave IaaS
 
-1. Terraform apply: change directory to terraforming-concourse and then `terraform apply`
+1. Terraform apply: 
+
+```
+./scripts/create-iaas.sh
+```
+
 2. Update with output variables
     - bosh_ip
         - update vars/bosh-director-params.yml
@@ -137,9 +142,15 @@ fly -t aws trigger-job -j hello-credhub/hello-credhub -w
 
 ```
 
+## Teardown
+
+```
+./scripts/delete-concourse.sh
+./scripts/delete-bosh.sh $ACCESS_KEY_ID $SECRET_ACCESS_KEY
+./scripts/delete-iaas.sh
+```
+
 ## Possible Next Steps
 
 1. Update concourse files to only make custom replacements from the core options
-2. Add generation of key pair within concourse scripts
-3. Add setup scripts
-4. Add tear down scripts
+2. Add generation of key pair within concourse scripts ?? not sure if this is still relevent
