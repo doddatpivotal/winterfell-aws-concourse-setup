@@ -1,4 +1,4 @@
-external_ip: 18.220.201.50
+external_ip: 18.217.202.181
 director_name: bosh-aws
 internal_cidr: 10.0.0.0/24
 internal_gw: 10.0.0.1
@@ -7,4 +7,4 @@ region: us-east-2
 az: us-east-2a
 default_key_name: bosh
 default_security_groups: [bosh]
-subnet_id: subnet-0c9c335716faf451d
+subnet_id: subnet-05994443b8d436577

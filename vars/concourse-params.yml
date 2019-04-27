@@ -4,7 +4,7 @@ db_persistent_disk_type: 'concourse-db'  # the disk type for persistence
 web_vm_type: 'concourse-web'  # the VM type for Concourse web VM
 worker_vm_type: 'concourse-workers'  # the VM type for worker VMs
 db_ip: '10.0.1.182'  # the IP address reserved for the Postgres DB
-vip_ip: '18.216.202.99'
+vip_ip: '3.14.123.59'
 deployment_name: concourse
 network_name: concourse
 network_name2: concourse-private

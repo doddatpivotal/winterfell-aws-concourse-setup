@@ -39,7 +39,7 @@ networks:
   subnets:
   - az: z1
     cloud_properties:
-      subnet: subnet-07939f4c31b747848
+      subnet: subnet-033f96e68418c49d4
     dns: [8.8.8.8]
     gateway: 10.0.1.1
     range: 10.0.1.0/24
@@ -52,7 +52,7 @@ networks:
   subnets:
   - az: z1
     cloud_properties:
-      subnet: subnet-0c9c335716faf451d
+      subnet: subnet-05994443b8d436577
     dns: [8.8.8.8]
     gateway: 10.0.0.1
     range: 10.0.0.0/24
