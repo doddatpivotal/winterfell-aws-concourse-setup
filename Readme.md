@@ -39,6 +39,8 @@ Get the supported credhub version from [Concourse for PCF docs](https://docs.piv
 
 First you need to setup a dedicated BOSH director for Concourse.  The following steps were guided by http://bosh.io/docs/init-aws/.
 
+>Note: The key step you still have to do manually is the creation of a [key-pair](https://bosh.io/docs/init-aws/#create-key-pair).  Terraform would have taken care of the other steps.
+
 1. Create the bosh environment
 
 You will need to update the variables passed in below with the ones provided by your environment
@@ -51,9 +53,9 @@ export SECRET_ACCESS_KEY=<get from ../credentails.csv>
 
 >Example ./scripts/create-bosh.sh asdfasdfasdf adsfasdfasdfadf
 
-1. Setup alias and update the cloud config
+1. Setup bosh alias and deploy updated cloud config to bosh director
 
->NOTE!!!!!!!  Make use you update the cloud.yml file with your subnet in AWS
+>NOTE!!!!!!!  Make use you update the bosh/cloud-config.yml file with your subnet in AWS
 
 ```bash
 ./scripts/configure-bosh.sh
@@ -108,6 +110,8 @@ For a uaa/credhub solution...
 bosh int generated/bosh/creds.yml --path /jumpbox_ssh/private_key > generated/bosh/jumpbox.key
 chmod 600  generated/bosh/jumpbox.key
 bosh alias-env bosh-concourse-aws -e $BOSH_IP --ca-cert <(bosh int generated/bosh/creds.yml --path /director_ssl/ca)
+export BOSH_CLIENT=admin
+export BOSH_CLIENT_SECRET=`bosh int generated/bosh/creds.yml --path /admin_password`
 bosh -e bosh-concourse-aws vms
 bosh -e bosh-concourse-aws -d concourse ssh $VM_FROM_PREVIOUS_COMMAND  --gw-host=$BOSH_IP --gw-user jumpbox --gw-private-key generated/bosh/jumpbox.key
 ```
